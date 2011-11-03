@@ -16,15 +16,15 @@ namespace Sleight
 
         List<dynamic> parameterStubs;
 
-        Dictionary<string, Execution> lastExecution;
+        Dictionary<string, List<Execution>> executionHistory;
 
         public Mock()
         {
             methodStubs = new Dictionary<string, object>();
 
-            lastExecution = new Dictionary<string, Execution>();
-
             parameterStubs = new List<dynamic>();
+
+            executionHistory = new Dictionary<string, List<Execution>>();
         }
 
         public Mock WithParameters(params object[] values)
@@ -74,14 +74,16 @@ namespace Sleight
 
         void RecordExecution(string name, object[] args, object returnValue, Type[] typeArguments)
         {
-            lastExecution[name] = new Execution
+            if (!executionHistory.ContainsKey(name))  executionHistory[name] = new List<Execution>();
+
+            executionHistory[name].Add(new Execution
             {
                 Parameter = (args ?? new object[0]).FirstOrDefault(),
                 Parameters = args,
                 ReturnValue = returnValue,
                 TypeArgument = (typeArguments ?? new Type[0]).FirstOrDefault(),
                 TypeArguments = typeArguments
-            };
+            });
         }
 
         public Mock Stub(string member)
@@ -93,7 +95,9 @@ namespace Sleight
 
         public Execution ExecutionFor(string member)
         {
-            return lastExecution.ValueOrNull(member);
+            if (executionHistory.ValueOrNull(member) != null) return executionHistory[member].Last();
+
+            return null;
         }
 
         public void Returns(object value)
@@ -128,6 +132,11 @@ namespace Sleight
             var csharpBinder = binder.GetType().GetInterface("Microsoft.CSharp.RuntimeBinder.ICSharpInvokeOrInvokeMemberBinder");
 
             return (csharpBinder.GetProperty("TypeArguments").GetValue(binder, null) as IList<Type>).ToArray();
+        }
+
+        public IEnumerable<Execution> ExecutionsFor(string sayhello)
+        {
+            return executionHistory.ValueOrNull(sayhello);
         }
     }
 }

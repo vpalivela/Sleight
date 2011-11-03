@@ -10,7 +10,7 @@ namespace Sleight.Tests
     {
         Mock mock;
 
-        dynamic asType;
+        dynamic asType, randomParameter;
 
         object result;
 
@@ -166,6 +166,28 @@ namespace Sleight.Tests
                     mock.ExecutionFor("SayHello").TypeArguments[0].should_be(typeof(string));
 
                     mock.ExecutionFor("SayHello").TypeArguments[1].should_be(typeof(int));
+                };
+            };
+
+            context["recording multiple calls to a method"] = () =>
+            {
+                before = () =>
+                {
+                    randomParameter = Guid.NewGuid();
+                };
+
+                act = () =>
+                {
+                    asType.SayHello("Jane");
+                    asType.SayHello(randomParameter);
+                    asType.SayHello("Jill");
+                };
+
+                it["record multiple calls"] = () =>
+                {
+                    mock.ExecutionsFor("SayHello").First().Parameter.should_be("Jane");
+                    mock.ExecutionsFor("SayHello").Last().Parameter.should_be("Jill");
+                    mock.ExecutionsFor("SayHello").ElementAt(1).Parameter.should_be(randomParameter as object);
                 };
             };
         }
