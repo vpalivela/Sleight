@@ -10,7 +10,7 @@ namespace Sleight.Tests
     {
         Mock mock;
 
-        dynamic asType;
+        dynamic asType, randomParameter;
 
         object result;
 
@@ -168,6 +168,25 @@ namespace Sleight.Tests
                     mock.ExecutionFor("SayHello").TypeArguments[1].should_be(typeof(int));
                 };
             };
+
+            context["recording multiple calls to a method"] = () =>
+            {
+                before = () => randomParameter = Guid.NewGuid();
+
+                act = () =>
+                {
+                    asType.SayHello("Jane");
+                    asType.SayHello(randomParameter);
+                    asType.SayHello("Jill");
+                };
+
+                it["record multiple calls"] = () =>
+                {
+                    mock.ExecutionsFor("SayHello").First().Parameter.should_be("Jane");
+                    mock.ExecutionsFor("SayHello").Last().Parameter.should_be("Jill");
+                    mock.ExecutionsFor("SayHello").ElementAt(1).Parameter.should_be(randomParameter as object);
+                };
+            };
         }
 
         void describe_stubbing_properties()
@@ -195,7 +214,7 @@ namespace Sleight.Tests
             };
         }
 
-        void recording_properties()
+        void recording_get_properties()
         {
             act = () => result = asType.FirstName;
 
@@ -209,12 +228,42 @@ namespace Sleight.Tests
                 it["records the member and the stubbed value"] = () =>
                     mock.ExecutionFor("FirstName").ReturnValue.should_be("Amir");
 
-                context["setting the property"] = () =>
-                {
-                    act = () => asType.FirstName = "Another";
+                
+            };
 
-                    it["records the setting of member"] = () =>
-                        mock.ExecutionFor("FirstName").Parameter.should_be("Another");
+            context["accessing property multiple times after stubbing it"] = () =>
+            {
+                act = () =>
+                {
+                    mock.Stub("FirstName").Returns("Venkat");
+                    result = asType.FirstName;
+                };
+
+                it["records that the property was accessed multiple times"] = () =>
+                {
+                    mock.ExecutionsFor("FirstName").Count().should_be(2);
+                    mock.ExecutionsFor("FirstName").First().ReturnValue.should_be(null);
+                    mock.ExecutionsFor("FirstName").Last().ReturnValue.should_be("Venkat");
+                };
+            };
+        }
+
+        void recording_set_properties()
+        {
+            act = () => asType.FirstName = "Another";
+
+            it["records the setting of member"] = () =>
+                    mock.ExecutionFor("FirstName").Parameter.should_be("Another");
+
+            context["setting property multiple times"] = () =>
+            {
+                act = () => asType.FirstName = "Venkat";
+
+                it["record that the property was set multiple times"] = () =>
+                {
+                    mock.ExecutionsFor("FirstName").Count().should_be(2);
+                    mock.ExecutionsFor("FirstName").First().Parameter.should_be("Another");
+                    mock.ExecutionsFor("FirstName").Last().Parameter.should_be("Venkat");
                 };
             };
         }
