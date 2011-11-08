@@ -2,11 +2,12 @@
 <package> 
   <metadata> 
     <id>sleight</id> 
-    <version>1.0.2</version> 
+    <version>1.0.3</version> 
     <authors>Amir Rajan</authors>
     <description>Dynamic mocking framework for .Net.  Usage: https://github.com/amirrajan/Sleight/blob/master/Sleight.Tests/describe_Mock.cs</description>
     <language>en-US</language>
     <licenseUrl>http://www.github.com/amirrajan/Sleight</licenseUrl>
+    <projectUrl>http://www.github.com/amirrajan/Sleight</projectUrl>
     <tags>dynamic mocking</tags>
   </metadata>
   <files>
