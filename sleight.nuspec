@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<package> 
+  <metadata> 
+    <id>sleight</id> 
+    <version>1.0.2</version> 
+    <authors>Amir Rajan</authors>
+    <description>Dynamic mocking framework for .Net.  Usage: https://github.com/amirrajan/Sleight/blob/master/Sleight.Tests/describe_Mock.cs</description>
+    <language>en-US</language>
+    <licenseUrl>http://www.github.com/amirrajan/Sleight</licenseUrl>
+    <tags>dynamic mocking</tags>
+  </metadata>
+  <files>
+    <file src="Sleight/Execution.cs" target="content/Sleight/Execution.cs" />
+    <file src="Sleight/Mock.cs" target="content/Sleight/Mock.cs" />
+    <file src="Sleight/ObjectExtensions.cs" target="content/Sleight/ObjectExtensions.cs" />
+  </files>
+</package>
